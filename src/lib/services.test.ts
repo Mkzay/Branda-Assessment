@@ -15,7 +15,11 @@ describe('catalogue queries', () => {
 });
 
 describe('cart calculations', () => {
-  it('isolates markets and computes mock tax from subtotal', () => {
+  it('prices a selected gift production run consistently', () => {
+    const items = [{ key:'mugs', slug:'branded-mugs', market:'uk' as const, quantity:2, selections:{'Quantity tier':'50 pieces'} }];
+    expect(cartTotals(items, 'uk')).toEqual({ subtotal:900, tax:180, total:1080, itemCount:2 });
+  });
+  it('isolates markets and computes estimated tax from subtotal', () => {
     const items = [
       { key:'one', slug:'logo-design', market:'ng' as const, quantity:2, selections:{} },
       { key:'two', slug:'logo-design', market:'us' as const, quantity:1, selections:{} },

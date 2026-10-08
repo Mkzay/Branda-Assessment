@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { ArrowUpRight, Menu, ShoppingBag, X } from 'lucide-react';
+import { ArrowUpRight, ChevronDown, Menu, ShoppingBag, X } from 'lucide-react';
 import { useState } from 'react';
 import { marketCodes, markets, type MarketCode } from '@/lib/markets';
 import { useCartStore } from '@/store/cart-store';
@@ -20,7 +20,7 @@ export function Header({ market }: { market: MarketCode }) {
       <nav className="nav-links" aria-label="Main navigation"><Link href={`/${market}/services`}>All services</Link><Link href={`/${market}/services?category=create`}>Create</Link><Link href={`/${market}/services?category=prints`}>Prints</Link><Link href={`/${market}/services?category=digital`}>Digital</Link><Link href={`/${market}/services?category=gifts`}>Gifts</Link></nav>
       <div className="header-actions">
         <label className="sr-only" htmlFor="market-selector">Select market</label>
-        <select id="market-selector" className="market-select" value={market} onChange={event => onMarketChange(event.target.value as MarketCode)}>{marketCodes.map(code => <option key={code} value={code}>{markets[code].flag} {markets[code].short}</option>)}</select>
+        <div className="market-control"><span className="market-label" aria-hidden="true"><span className="market-full">{markets[market].short}</span><span className="market-code">{market.toUpperCase()}</span><ChevronDown size={13}/></span><select id="market-selector" className="market-select" value={market} onChange={event => onMarketChange(event.target.value as MarketCode)}>{marketCodes.map(code => <option key={code} value={code}>{markets[code].flag} {markets[code].short}</option>)}</select></div>
         <Link className="icon-button" href={`/${market}/cart`} aria-label={`Cart, ${count} items`}><ShoppingBag size={19}/>{count > 0 && <span className="cart-badge">{count}</span>}</Link>
         <button className="icon-button mobile-toggle" type="button" onClick={() => setOpen(!open)} aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open}>{open ? <X size={20}/> : <Menu size={20}/>}</button>
       </div>

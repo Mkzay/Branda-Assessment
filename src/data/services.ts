@@ -8,6 +8,12 @@ const photos = {
   prints: ['photo-1541462608143-67571c6738dd','photo-1531403009284-440f080d1e12','photo-1556740738-b6a63e27c4df'],
 };
 const image = (id: string) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1200&q=85`;
+const giftPhotos: Record<string,string[]> = {
+  'branded-mugs': ['photo-1514228742587-6b1558fcca3d','photo-1495100497150-fe209c585f50','photo-1568036742660-e2681c3ee486'],
+  'corporate-gift-box': ['photo-1545844568-98bb15133ec0'],
+  'custom-tote-bags': ['photo-1574365569389-a10d488ca3fb'],
+  'branded-water-bottles': ['photo-1725730929864-31959a4f1e50'],
+};
 const basic = (name: string, values: string[]): ServiceOption => ({ name, values });
 
 type Seed = [string, Category, string, number, number, string[], string[], 'standard' | 'express', string, string[], ServiceOption[], string[], number?];
@@ -46,10 +52,10 @@ export const industries = ['startups','corporate','retail','hospitality','events
 export const services: Service[] = seeds.map((seed, index) => {
   const [name, category, shortDescription, ng, us, industry, useCases, urgency, turnaround, included, options, relatedServices, discount] = seed;
   const slug = name.toLowerCase().replaceAll(' ', '-');
-  const photoIds = photos[category];
+  const photoIds = giftPhotos[slug] ?? photos[category];
   return { id: `srv-${index+1}`, slug, name, category, shortDescription,
     description: `${shortDescription} Our team brings strategy, craft, and careful execution together so every touchpoint feels unmistakably yours. We'll guide you from the first brief through to a finished result you can be proud to share.`,
-    image: image(photoIds[index % photoIds.length]), images: [image(photoIds[index % photoIds.length]), image(photoIds[(index+1) % photoIds.length]), image(photoIds[(index+2) % photoIds.length])],
+    image: image(photoIds[giftPhotos[slug] ? 0 : index % photoIds.length]), images: giftPhotos[slug] ? photoIds.map(image) : [image(photoIds[index % photoIds.length]), image(photoIds[(index+1) % photoIds.length]), image(photoIds[(index+2) % photoIds.length])],
     pricing: { ng, us, uk: Math.round(us * 0.78), ca: Math.round(us * 1.36) },
     popularity: 100 - index * 3 + (category === 'create' ? 14 : 0), industries: industry, useCases, urgency, turnaround, included, options, relatedServices, discount,
   };
