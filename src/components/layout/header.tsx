@@ -1,29 +1,57 @@
-'use client';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { ArrowUpRight, ChevronDown, Menu, ShoppingBag, X } from 'lucide-react';
-import { useState } from 'react';
-import { marketCodes, markets, type MarketCode } from '@/lib/markets';
-import { useCartStore } from '@/store/cart-store';
+import { ArrowUpRight } from 'lucide-react';
+import type { MarketCode } from '@/lib/markets';
+import { HeaderControls } from './header-controls';
 
 export function Header({ market }: { market: MarketCode }) {
-  const pathname = usePathname(); const router = useRouter(); const [open,setOpen] = useState(false);
-  const count = useCartStore(state => state.hydrated ? state.items.filter(item => item.market === market).reduce((sum,item) => sum+item.quantity,0) : 0);
-  const onMarketChange = (next: MarketCode) => {
-    const suffix = pathname.replace(/^\/(ng|us|uk|ca)/,'');
-    router.push(`/${next}${suffix}${window.location.search}`);
-  };
-  return <>
-    <div className="announcement">One creative partner. Every brand possibility.</div>
-    <header className="site-header"><div className="container header-inner">
-      <Link href={`/${market}`} className="logo" aria-label="Branda home">branda<span>.</span></Link>
-      <nav className="nav-links" aria-label="Main navigation"><Link href={`/${market}/services`}>All services</Link><Link href={`/${market}/services?category=create`}>Create</Link><Link href={`/${market}/services?category=prints`}>Prints</Link><Link href={`/${market}/services?category=digital`}>Digital</Link><Link href={`/${market}/services?category=gifts`}>Gifts</Link></nav>
-      <div className="header-actions">
-        <label className="sr-only" htmlFor="market-selector">Select market</label>
-        <div className="market-control"><span className="market-label" aria-hidden="true"><span className="market-full">{markets[market].short}</span><span className="market-code">{market.toUpperCase()}</span><ChevronDown size={13}/></span><select id="market-selector" className="market-select" value={market} onChange={event => onMarketChange(event.target.value as MarketCode)}>{marketCodes.map(code => <option key={code} value={code}>{markets[code].flag} {markets[code].short}</option>)}</select></div>
-        <Link className="icon-button" href={`/${market}/cart`} aria-label={`Cart, ${count} items`}><ShoppingBag size={19}/>{count > 0 && <span className="cart-badge">{count}</span>}</Link>
-        <button className="icon-button mobile-toggle" type="button" onClick={() => setOpen(!open)} aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open}>{open ? <X size={20}/> : <Menu size={20}/>}</button>
+  const links = ['create', 'prints', 'digital', 'gifts', 'studio'];
+  const mobileNavigation = (
+    <nav
+      aria-label="Mobile navigation"
+      className="flex flex-col gap-0 border-t border-line bg-paper px-[18px] pt-2 pb-4 font-bold [&_a]:flex [&_a]:min-h-12 [&_a]:items-center [&_a]:justify-between [&_a]:border-b [&_a]:border-line"
+    >
+      <Link href={`/${market}/services`}>
+        Explore all services <ArrowUpRight size={16} />
+      </Link>
+      {links.map((category) => (
+        <Link
+          key={category}
+          href={`/${market}/services?category=${category}`}
+          className="capitalize"
+        >
+          {category}
+        </Link>
+      ))}
+    </nav>
+  );
+  return (
+    <>
+      <div className="bg-green px-3 py-[7px] text-center text-[10px] font-semibold tracking-[.02em] text-white min-[761px]:px-4 min-[761px]:py-2 min-[761px]:text-xs min-[761px]:tracking-[.04em]">
+        One creative partner. Every brand possibility.
       </div>
-    </div>{open && <nav className="mobile-panel" aria-label="Mobile navigation" onClick={() => setOpen(false)}><Link href={`/${market}/services`}>Explore all services <ArrowUpRight size={16}/></Link><Link href={`/${market}/services?category=create`}>Create</Link><Link href={`/${market}/services?category=prints`}>Prints</Link><Link href={`/${market}/services?category=digital`}>Digital</Link><Link href={`/${market}/services?category=gifts`}>Gifts</Link><Link href={`/${market}/services?category=studio`}>Studio</Link></nav>}</header>
-  </>;
+      <header className="sticky top-0 z-40 border-b border-line bg-paper/97 backdrop-blur-[14px]">
+        <div className="container flex h-16 items-center gap-2.5 min-[761px]:h-[76px] min-[761px]:gap-5 min-[1051px]:gap-[38px]">
+          <Link href={`/${market}`} className="logo" aria-label="Branda home">
+            branda<span>.</span>
+          </Link>
+          <nav
+            aria-label="Main navigation"
+            className="ml-auto hidden items-center gap-[17px] text-sm font-bold min-[761px]:flex min-[1051px]:gap-7 [&_a:hover]:text-brand"
+          >
+            <Link href={`/${market}/services`}>All services</Link>
+            {links.slice(0, 4).map((category) => (
+              <Link
+                key={category}
+                href={`/${market}/services?category=${category}`}
+                className="capitalize"
+              >
+                {category}
+              </Link>
+            ))}
+          </nav>
+          <HeaderControls market={market} mobileNavigation={mobileNavigation} />
+        </div>
+      </header>
+    </>
+  );
 }

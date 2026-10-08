@@ -1,44 +1,57 @@
-# Branda V2
+# Branda V2 — Service Ordering Platform
 
-A responsive, multi-market branding service ordering MVP built with Next.js App Router, React, TypeScript, Tailwind CSS, Zustand, and Zod.
+**Live Demo:** [branda-assessment.vercel.app](https://branda-assessment.vercel.app)
 
-## What it does
+**Repository:** [Mkzay/Branda-Assessment](https://github.com/Mkzay/Branda-Assessment)
 
-- Browse 20 services across Digital, Gifts, Create, Studio, and Prints.
-- Search, filter by category/industry/urgency, sort, and paginate using shareable URL parameters.
-- View service details, galleries, options, turnaround, inclusions, and complementary services.
-- Configure quantities and options, save items in a persistent cart, and complete a browser checkout.
-- Switch between Nigeria (`/ng`), United States (`/us`), United Kingdom (`/uk`), and Canada (`/ca`) while keeping the equivalent route.
-- Show market prices with `Intl.NumberFormat` and localized SEO metadata with canonical and alternate URLs.
+A responsive service ordering MVP for Branda’s frontend assessment. Discover, configure, and review branding services across four markets.
 
-## Run locally
+## Features
+
+- 20 services across Digital, Gifts, Create, Studio, and Prints.
+- Server-rendered catalogue with URL-driven search, single-select filters, sorting, and pagination.
+- Service galleries, options, quantities, turnaround, inclusions, and complementary services.
+- Persistent cart, Zod contact validation, and browser-only order confirmation.
+- Nigeria (`/ng`, NGN), United States (`/us`, USD), United Kingdom (`/uk`, GBP), and Canada (`/ca`, CAD). Switching markets preserves the equivalent route and query.
+- Market-specific metadata, canonical URLs, hreflang alternatives, and Open Graph tags.
+- Responsive navigation, a native mobile filter dialog, and market-aware recovery links.
+
+## Tech stack
+
+Next.js App Router, React, TypeScript, Tailwind CSS 4, Zustand, Zod, and Lucide React. Bricolage Grotesque and Manrope are self-hosted through Fontsource.
+
+## Architecture and key decisions
+
+- Pages, catalogue results, and static header navigation are Server Components. Client Components handle search, market controls, gallery selection, configuration, cart state, and checkout.
+- Tailwind utilities own shared grids, responsive catalogue/cart/checkout layouts, service cards, buttons, header controls, and filters. Brand-specific hero shapes, gallery treatment, and remaining page styles live in the formatted CSS files. Colour tokens are shared through Tailwind’s theme.
+- Service records and queries live in `src/data` and `src/lib`. Filter options are separate from service records. Cart and checkout receive a compact server-generated lookup containing names, images, categories, and current-market prices; the complete catalogue is not imported into their client code.
+- Zustand stores service identifiers, market, quantity, and selected options in local storage. Confirmation is saved in session storage. Gift quantity tiers multiply the per-item price; other options record the selected scope without changing the starting price.
+- Filter groups use radios with explicit “All” options. The mobile filter uses `<dialog>.showModal()` for browser-managed focus containment, background inertness, Escape dismissal, and focus restoration.
+- `src/lib/markets.ts` centralises locales, currencies, and illustrative tax rates. `Intl.NumberFormat` formats prices. Recovery links retain valid market prefixes; invalid markets return a 404.
+
+## Local setup
 
 Requirements: Node.js 20.9+ and npm.
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
-Open `http://localhost:3000`; the root route redirects to `/ng`.
+Open [localhost:3000](http://localhost:3000). The root route redirects to `/ng`.
 
 ```bash
+npm run lint
+npm run format:check
 npm test
 npm run build
 npm start
 ```
 
-## Architecture
+`npm run format` formats source, configuration, and documentation with Prettier. Tests cover catalogue queries, cart calculations, and market-aware recovery.
 
-Pages and catalogue results are Server Components. Search, filters, gallery, configuration, cart, market selector, and checkout are small Client Components. Service records and queries live in `src/data` and `src/lib`; the cart store contains only the user's selected items. Catalogue state lives in the URL. The cart persists to local storage, while the browser confirmation is saved to session storage.
+Set `NEXT_PUBLIC_SITE_URL` to the deployed origin for absolute metadata URLs. On Vercel, `VERCEL_URL` is the fallback when that value is absent.
 
-Market settings, price formatting, and illustrative tax rates live in `src/lib/markets.ts`. Rates are illustrative estimates: NG 7.5%, US 8%, UK 20%, CA 13%. They are not tax advice or actual jurisdiction-specific calculations. Pricing is illustrative and does not use live exchange rates.
+## Assumptions and limitations
 
-Set `NEXT_PUBLIC_SITE_URL` to the deployed origin for absolute Open Graph URLs. On Vercel, `VERCEL_URL` is used automatically when this value is absent. Relative canonical and alternate routes are resolved against that origin by Next.js metadata.
-
-## Limitations
-
-The assessment scope uses local service data and a browser order confirmation. No backend, payment, accounts, order delivery, or live pricing are included. Gift quantity tiers multiply the per-item price; other service options are captured in the cart without changing the starting price; final scope and price would be confirmed after a real brief. A live deployment URL and repository URL can be added when hosting is configured.
-
-## UI typography
-Bricolage Grotesque gives headings a playful character; Manrope keeps body text and forms clear. Both fonts are self-hosted. Responsive refinements cover navigation, catalogue, service details, cart, checkout, confirmation and empty states, with reduced-motion support.
+This assessment uses local service data and browser storage. It has no backend, payment collection, accounts, or order delivery. Checkout saves a request in the browser and does not send it to Branda. Prices and tax rates are illustrative: NG 7.5%, US 8%, UK 20%, CA 13%. Rates are not jurisdiction-specific calculations; pricing does not use live exchange rates. A production checkout would validate prices, options, taxes, and orders on the server. Service photos are illustrative Unsplash images.

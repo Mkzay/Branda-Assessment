@@ -1,2 +1,4 @@
 import { redirect } from 'next/navigation';
-export default function RootPage() { redirect('/ng'); }
+export default function RootPage() {
+  redirect('/ng');
+}

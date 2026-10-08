@@ -1,8 +1,4 @@
 import { RecoveryState } from '@/components/layout/recovery-state';
 export default function NotFound() {
-  return (
-    <main>
-      <RecoveryState />
-    </main>
-  );
+  return <RecoveryState />;
 }
